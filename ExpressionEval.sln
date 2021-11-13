@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExpressionEval", "ExpressionEval\ExpressionEval.vcxproj", "{BB2E40A7-262E-4964-9B8B-836ECB1595DD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB2E40A7-262E-4964-9B8B-836ECB1595DD}.Debug|x64.ActiveCfg = Debug|x64
+		{BB2E40A7-262E-4964-9B8B-836ECB1595DD}.Debug|x64.Build.0 = Debug|x64
+		{BB2E40A7-262E-4964-9B8B-836ECB1595DD}.Debug|x86.ActiveCfg = Debug|Win32
+		{BB2E40A7-262E-4964-9B8B-836ECB1595DD}.Debug|x86.Build.0 = Debug|Win32
+		{BB2E40A7-262E-4964-9B8B-836ECB1595DD}.Release|x64.ActiveCfg = Release|x64
+		{BB2E40A7-262E-4964-9B8B-836ECB1595DD}.Release|x64.Build.0 = Release|x64
+		{BB2E40A7-262E-4964-9B8B-836ECB1595DD}.Release|x86.ActiveCfg = Release|Win32
+		{BB2E40A7-262E-4964-9B8B-836ECB1595DD}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {94B08888-99C5-4E5C-97C3-361AB0E8C5AE}
+	EndGlobalSection
+EndGlobal
