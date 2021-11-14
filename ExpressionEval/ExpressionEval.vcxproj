@@ -142,12 +142,14 @@
     <ClCompile Include="Expression.cpp" />
     <ClCompile Include="ExpressionNode.cpp" />
     <ClCompile Include="ExpressionOperation.cpp" />
+    <ClCompile Include="ExpressionTree.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Expression.h" />
     <ClInclude Include="ExpressionNode.h" />
     <ClInclude Include="ExpressionOperation.h" />
+    <ClInclude Include="ExpressionTree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

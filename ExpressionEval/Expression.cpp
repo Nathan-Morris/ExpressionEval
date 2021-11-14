@@ -37,6 +37,14 @@ size_t Expression::nodeCount() const {
 	return this->mExpressionNodes.size();
 }
 
+std::vector<ExpressionNode>::const_iterator Expression::begin() const {
+	return this->mExpressionNodes.begin();
+}
+
+std::vector<ExpressionNode>::const_iterator Expression::end() const {
+	return this->mExpressionNodes.end();
+}
+
 std::ostream& operator<<(std::ostream& out, const Expression& expr) {
 	for (const auto& node : expr.mExpressionNodes) {
 		out << node;

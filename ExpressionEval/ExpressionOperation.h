@@ -2,6 +2,11 @@
 #include <map>
 #pragma once
 
+enum class OperationIdOpType : unsigned short {
+	UNARY = 0,
+	BINARY = 1
+};
+
 class OperationId {
 private:
 	static unsigned short LAST_ID;
@@ -20,11 +25,11 @@ public:
 
 	unsigned short id() const;
 	unsigned short precedent() const;
-	unsigned short type() const;
+	OperationIdOpType type() const;
 
 	unsigned short id(unsigned short value);
 	unsigned short precedent(unsigned short value);
-	unsigned short type(unsigned short value);
+	OperationIdOpType type(unsigned short value);
 
 
 public:

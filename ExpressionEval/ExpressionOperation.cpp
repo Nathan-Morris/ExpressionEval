@@ -19,11 +19,11 @@ unsigned short OperationId::id() const {
 }
 
 unsigned short OperationId::precedent() const {
-	return this->mPrecedent;
+	return this->mOpType ? this->mPrecedent : 0x7;
 }
 
-unsigned short OperationId::type() const {
-	return this->mOpType;
+OperationIdOpType OperationId::type() const {
+	return (OperationIdOpType)this->mOpType;
 }
 
 unsigned short OperationId::id(unsigned short value) {
@@ -34,8 +34,8 @@ unsigned short OperationId::precedent(unsigned short value) {
 	return (this->mPrecedent = (value > 0x7) ? 0x7 : value);
 }
 
-unsigned short OperationId::type(unsigned short value) {
-	return (this->mOpType = (bool)value);
+OperationIdOpType OperationId::type(unsigned short value) {
+	return (OperationIdOpType)(this->mOpType = (bool)value);
 }
 
 bool operator<(const OperationId& opIdRefL, const OperationId& opIdRefR) {

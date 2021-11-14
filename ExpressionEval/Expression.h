@@ -18,6 +18,9 @@ public:
 
 	size_t nodeCount() const;
 
+	std::vector<ExpressionNode>::const_iterator begin() const;
+	std::vector<ExpressionNode>::const_iterator end() const;
+
 public:
 	Expression& operator=(const Expression& expressionRef);
 

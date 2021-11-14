@@ -29,6 +29,11 @@ public:
 	ExpressionNode(float value);
 	ExpressionNode(char c);
 
+	ExpressionNodeType type() const;
+	float value() const;
+	OperationId opId() const;
+	char varChar() const;
+
 public:
 	friend std::ostream& operator<<(std::ostream& out, const ExpressionNode& node);
 };

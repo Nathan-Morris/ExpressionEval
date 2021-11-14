@@ -28,6 +28,11 @@ ExpressionNode::ExpressionNode(char c) {
 	}
 }
 
+ExpressionNodeType ExpressionNode::type() const { return this->mType; }
+float ExpressionNode::value() const { return this->mData.value; }
+OperationId ExpressionNode::opId() const { return this->mData.opId; }
+char ExpressionNode::varChar() const { return this->mData.varChar; }
+
 std::ostream& operator<<(std::ostream& out, const ExpressionNode& node) {
 	const ExpressionOperationInfo* infoPtr;
 

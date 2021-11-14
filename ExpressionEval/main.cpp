@@ -1,7 +1,6 @@
 #include <iostream>
 
-#include "Expression.h"
-#include "ExpressionOperation.h"
+#include "ExpressionTree.h"
 
 using namespace std;
 
@@ -17,9 +16,11 @@ int main(int argc, char* argv[], char* env[]) {
 		ExpressionOperationInfo("/", OperationId(1, 1)),
 		ExpressionOperationInfo("^", OperationId(1, 2)),
 		ExpressionOperationInfo("sin", OperationId(0)),
+		ExpressionOperationInfo("cos", OperationId(0)),
+		ExpressionOperationInfo("tan", OperationId(0)),
 	});
 
-	Expression expr("123+7*sin(x)");
+	Expression expr("cos(cos(x) * cos(x))");
 
-	cout << expr.nodeCount() << " -> " << expr;
+	ExpressionTree tree(expr);
 }
