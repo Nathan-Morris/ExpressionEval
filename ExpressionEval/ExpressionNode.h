@@ -8,8 +8,7 @@ enum class ExpressionNodeType : unsigned char
 	VARIABLE,	// variables, 'x'
 	SCOPE_INC,	// ( [
 	SCOPE_DEC,	// ) ]
-	BIN_OP,		// + -
-	UN_OP		// cos sin
+	OPERATION,	// + - * sin cos
 };
 
 class ExpressionNode
@@ -21,11 +20,16 @@ private:
 		float value;
 		OperationId opId;
 		char varChar;
+		
+		inline ExpressionNodeData() { }
 	} mData;
 
 public:
 	ExpressionNode(ExpressionNodeType type, OperationId opId);
 	ExpressionNode(float value);
 	ExpressionNode(char c);
+
+public:
+	friend std::ostream& operator<<(std::ostream& out, const ExpressionNode& node);
 };
 

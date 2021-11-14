@@ -15,9 +15,14 @@ public:
 	Expression(const char* cstr, size_t len);
 	Expression(const std::string& str);
 	Expression(const Expression& expressionRef);
-	~Expression();
+
+	size_t nodeCount() const;
 
 public:
 	Expression& operator=(const Expression& expressionRef);
+
+public:
+	friend std::ostream& operator<<(std::ostream& out, const Expression& expr);
 };
 
+ 

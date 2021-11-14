@@ -1,29 +1,25 @@
 #include <iostream>
 
+#include "Expression.h"
 #include "ExpressionOperation.h"
 
 using namespace std;
 
 /*
-
+string -> tokens
 */
 
 int main(int argc, char* argv[], char* env[]) {
-	BinaryOperationInfo::declareOperations(
-		"+", 1, "-", 1, "*", 2, "/", 3, "^", 4
-	);
+	ExpressionOperationInfo::declareOperations({
+		ExpressionOperationInfo("+", OperationId(1, 0)),
+		ExpressionOperationInfo("-", OperationId(1, 0)),
+		ExpressionOperationInfo("*", OperationId(1, 1)),
+		ExpressionOperationInfo("/", OperationId(1, 1)),
+		ExpressionOperationInfo("^", OperationId(1, 2)),
+		ExpressionOperationInfo("sin", OperationId(0)),
+	});
 
-	UnaryOperationInfo::declareOperations(
-		"sin", "cos", "tan", "csc"
-	);
+	Expression expr("123+7*sin(x)");
 
-	for (const auto& p : UnaryOperationInfo::DECLARED_OPERATIONS) {
-		cout << p.first.id() << "|" << p.first.precedent() << " -> " << p.second.token() << endl;
-	}
-
-	const char* equStr = "sincos";
-	const void* ptr;
-	
-	cout << UnaryOperationInfo::findOperation(equStr + 3, &ptr) << endl;
-	cout << ((UnaryOperationInfo*)ptr)->token() << endl;
+	cout << expr.nodeCount() << " -> " << expr;
 }
