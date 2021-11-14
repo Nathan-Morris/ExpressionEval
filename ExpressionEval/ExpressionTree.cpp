@@ -4,11 +4,58 @@ ExpressionTreeNode::ExpressionTreeNode(
 	const ExpressionNode& node, 
 	ExpressionTreeNode* left, 
 	ExpressionTreeNode* right
-) : node(node), left(left), right(right) { }
+) : mNode(node), mLeft(left), mRight(right) { }
+
+const ExpressionNode& ExpressionTreeNode::node() const {
+	return this->mNode;
+}
+
+ExpressionNode& ExpressionTreeNode::node() {
+	return this->mNode;
+}
+
+ExpressionTreeNode* ExpressionTreeNode::left() const {
+	return this->mLeft;
+}
+
+ExpressionTreeNode* ExpressionTreeNode::right() const {
+	return this->mRight;
+}
+
+ExpressionTreeNode* ExpressionTreeNode::copy() const {
+	return new ExpressionTreeNode(
+		this->mNode, 
+		this->mLeft ? this->mLeft->copy() : NULL, 
+		this->mRight ? this->mRight->copy() : NULL
+	);
+}
+
+void ExpressionTreeNode::print(std::ostream& out, unsigned short depth) {
+	for (unsigned short i = 0; i != depth; i++) {
+		out << '\t';
+	}
+	out << this->mNode;
+	out << std::endl;
+
+	if (this->mLeft) {
+		mLeft->print(out, depth + 1);
+	}
+	if (this->mRight) {
+		mRight->print(out, depth + 1);
+	}
+}
+
+
+
+//
+//
+//
 
 ExpressionTree::ExpressionTree(const Expression& expr) {
 	std::vector<ExpressionNode> postNodeList;
 	std::stack<ExpressionNode> postNodeStack;
+	std::stack<ExpressionTreeNode*> treeNodeStack;
+	ExpressionTreeNode* leafL, * leafR;
 	bool unaryPopped = false;
 
 	for (const ExpressionNode& node : expr) {
@@ -68,8 +115,67 @@ ExpressionTree::ExpressionTree(const Expression& expr) {
 		postNodeStack.pop();
 	}
 
+	for (const ExpressionNode& node : postNodeList) {
+		switch (node.type())
+		{
+		case ExpressionNodeType::VALUE:
+		case ExpressionNodeType::VARIABLE:
+			treeNodeStack.push(new ExpressionTreeNode(node, NULL, NULL));
+			break;
 
-	for (ExpressionNode& node : postNodeList) {
-		std::cout << node;
+		case ExpressionNodeType::OPERATION:
+			leafL = treeNodeStack.top();
+			treeNodeStack.pop();
+
+			if (node.opId().type() == OperationIdOpType::UNARY) {
+				treeNodeStack.push(new ExpressionTreeNode(node, leafL, NULL));
+			}
+			else {
+				leafR = treeNodeStack.top();
+				treeNodeStack.pop();
+
+				treeNodeStack.push(new ExpressionTreeNode(node, leafR, leafL));
+			}
+			break;
+		}
 	}
+
+	this->root = treeNodeStack.top();
+}
+
+float ExpressionTree::solve(ExpressionTreeNode* root) {
+	const ExpressionOperationInfo* opInfoPtr;
+	
+	switch (root->node().type())
+	{
+	case ExpressionNodeType::VALUE:
+		return root->node().value();
+	
+	case ExpressionNodeType::OPERATION:
+		if (ExpressionOperationInfo::findOperation(root->node().opId(), &opInfoPtr)) {
+			switch (opInfoPtr->opId().type())
+			{
+			case OperationIdOpType::BINARY:
+				opInfoPtr->binaryCallback()(this->solve(root->left()), this->solve(root->right()));
+				break;
+
+			case OperationIdOpType::UNARY:
+				opInfoPtr->unaryCallback()(this->solve(root->left()));
+				break;
+			}
+		}
+		else {
+			return 0.f;
+		}
+	}
+}
+
+float ExpressionTree::solve() {
+	ExpressionTreeNode* rootCopy = this->root->copy();
+	return this->solve(rootCopy);
+}
+
+std::ostream& operator<<(std::ostream& out, const ExpressionTree& tree) {
+	tree.root->print(out);
+	return out;
 }

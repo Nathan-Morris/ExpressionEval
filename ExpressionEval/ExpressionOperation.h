@@ -2,6 +2,9 @@
 #include <map>
 #pragma once
 
+typedef float(*BinaryOperationCallback)(float, float);
+typedef float(*UnaryOperationCallback)(float);
+
 enum class OperationIdOpType : unsigned short {
 	UNARY = 0,
 	BINARY = 1
@@ -31,7 +34,6 @@ public:
 	unsigned short precedent(unsigned short value);
 	OperationIdOpType type(unsigned short value);
 
-
 public:
 	friend bool operator<(const OperationId& opIdRefL, const OperationId& opIdRefR);
 };
@@ -44,10 +46,12 @@ class ExpressionOperationInfo {
 protected:
 	const char* mToken = NULL;
 	unsigned char mTokenLen = 0;
+	void* mOpCallback = NULL;
 	OperationId mOpId;
 
 public:
-	ExpressionOperationInfo(const char* token, OperationId id);
+	ExpressionOperationInfo(const char* token, OperationId id, UnaryOperationCallback cb);
+	ExpressionOperationInfo(const char* token, OperationId id, BinaryOperationCallback cb);
 	ExpressionOperationInfo(const char* token);
 	ExpressionOperationInfo();
 
@@ -56,6 +60,8 @@ public:
 	const char* token() const;
 	unsigned char tokenLen() const;
 
+	UnaryOperationCallback unaryCallback() const;
+	BinaryOperationCallback binaryCallback() const;
 
 // static members
 private:

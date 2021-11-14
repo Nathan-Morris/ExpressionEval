@@ -46,8 +46,11 @@ bool operator<(const OperationId& opIdRefL, const OperationId& opIdRefR) {
 //
 //
 
-ExpressionOperationInfo::ExpressionOperationInfo(const char* token, OperationId id)
-	: mToken(token), mTokenLen(strlen(token)), mOpId(id) { }
+ExpressionOperationInfo::ExpressionOperationInfo(const char* token, OperationId id, UnaryOperationCallback cb)
+	: mToken(token), mTokenLen(strlen(token)), mOpId(id), mOpCallback((void*)cb) { }
+
+ExpressionOperationInfo::ExpressionOperationInfo(const char* token, OperationId id, BinaryOperationCallback cb)
+	: mToken(token), mTokenLen(strlen(token)), mOpId(id), mOpCallback((void*)cb) { }
 
 ExpressionOperationInfo::ExpressionOperationInfo(const char* token)
 	: mToken(token), mTokenLen(strlen(token)) { }
@@ -64,6 +67,14 @@ const char* ExpressionOperationInfo::token() const {
 
 unsigned char ExpressionOperationInfo::tokenLen() const {
 	return this->mTokenLen;
+}
+
+UnaryOperationCallback ExpressionOperationInfo::unaryCallback() const {
+	return (UnaryOperationCallback)this->mOpCallback;
+}
+
+BinaryOperationCallback ExpressionOperationInfo::binaryCallback() const {
+	return (BinaryOperationCallback)this->mOpCallback;
 }
 
 // static members
