@@ -1,22 +1,29 @@
 #include "Expression.h"
 
 Expression::Expression(const char* cstr, size_t len) {
-	const void* foundPtr;
+	const ExpressionOperationInfo* opPtr;
+	char* endPtr;
 
 	for (size_t i = 0; i < len; i++) {
-		const char c = cstr[i];
+		const char& c = cstr[i];
 
-		if (BinaryOperationInfo::findOperation(&c, &foundPtr)) {
+		// to dynamic scope token setting
+		if (ExpressionOperationInfo::findOperation(&c, &opPtr)) {
 			this->mExpressionNodes.push_back(
-				ExpressionNode(ExpressionNodeType::BIN_OP, ((BinaryOperationInfo*)foundPtr)->opId())
+				ExpressionNode(ExpressionNodeType::OPERATION, opPtr->opId())
 			);
-			i += ((BinaryOperationInfo*)foundPtr)->tokenLen() - 1;
 		}
-		else if (UnaryOperationInfo::findOperation(&c, &foundPtr)) {
+		else if (c == '(' || c == ')' || c == '[' || c == ']' || c == 'x') {
 			this->mExpressionNodes.push_back(
-				ExpressionNode(ExpressionNodeType::UN_OP, ((UnaryOperationInfo*)foundPtr)->opId())
+				ExpressionNode(c)
 			);
-			i += ((UnaryOperationInfo*)foundPtr)->tokenLen() - 1;
+		}
+		else if (isdigit(c) || c == '.') {
+			this->mExpressionNodes.push_back(
+				ExpressionNode(strtof(&c, &endPtr))
+			);
+			
+			i += (size_t)(endPtr - &c) - 1;
 		}
 	}
 
@@ -24,5 +31,24 @@ Expression::Expression(const char* cstr, size_t len) {
 
 Expression::Expression(const std::string& str) : Expression(str.c_str(), str.length()) {
 
+}
+
+size_t Expression::nodeCount() const {
+	return this->mExpressionNodes.size();
+}
+
+std::vector<ExpressionNode>::const_iterator Expression::begin() const {
+	return this->mExpressionNodes.begin();
+}
+
+std::vector<ExpressionNode>::const_iterator Expression::end() const {
+	return this->mExpressionNodes.end();
+}
+
+std::ostream& operator<<(std::ostream& out, const Expression& expr) {
+	for (const auto& node : expr.mExpressionNodes) {
+		out << node;
+	}
+	return out;
 }
 
