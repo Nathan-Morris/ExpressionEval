@@ -1,29 +1,32 @@
 #include <iostream>
 
-#include "ExpressionOperation.h"
+#include "ExpressionTree.h"
 
 using namespace std;
 
 /*
-
+string -> tokens
 */
 
 int main(int argc, char* argv[], char* env[]) {
-	BinaryOperationInfo::declareOperations(
-		"+", 1, "-", 1, "*", 2, "/", 3, "^", 4
-	);
+	ExpressionOperationInfo::declareOperations({
+		ExpressionOperationInfo("+", OperationId(1, 0), [](float a, float b)->float {return a + b;}),
+		ExpressionOperationInfo("-", OperationId(1, 0), [](float a, float b)->float {return a - b; }),
+		ExpressionOperationInfo("*", OperationId(1, 1), [](float a, float b)->float {return a * b; }),
+		ExpressionOperationInfo("/", OperationId(1, 1), [](float a, float b)->float {return a / b; }),
+		ExpressionOperationInfo("^", OperationId(1, 2), [](float a, float b)->float {return pow(a, b); }),
+		ExpressionOperationInfo("sin", OperationId(0), [](float a)->float {return sin(a); }),
+		ExpressionOperationInfo("cos", OperationId(0), [](float a)->float {return cos(a); }),
+		ExpressionOperationInfo("tan", OperationId(0), [](float a)->float {return tan(a); }),
+	});
 
-	UnaryOperationInfo::declareOperations(
-		"sin", "cos", "tan", "csc"
-	);
+	std::string in;
 
-	for (const auto& p : UnaryOperationInfo::DECLARED_OPERATIONS) {
-		cout << p.first.id() << "|" << p.first.precedent() << " -> " << p.second.token() << endl;
-	}
+	cout << "Expression = ";
+	getline(cin, in);
 
-	const char* equStr = "sincos";
-	const void* ptr;
-	
-	cout << UnaryOperationInfo::findOperation(equStr + 3, &ptr) << endl;
-	cout << ((UnaryOperationInfo*)ptr)->token() << endl;
+	Expression expr(in);
+	ExpressionTree tree(expr);
+
+	cout << tree.solve() << endl;
 }

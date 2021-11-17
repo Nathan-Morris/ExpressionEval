@@ -1,13 +1,17 @@
 #include "ExpressionOperation.h"
 
-OperationId::OperationId() : OperationId(0, 0) { }
+unsigned short OperationId::LAST_ID = 0;
 
-OperationId::OperationId(unsigned short opIdBase, unsigned short precedent) {
-	if (precedent > 0xF) {
-		precedent = 0xF;
-	}
-	this->mId = opIdBase;
-	this->mPrecedent = precedent;
+OperationId::OperationId() : OperationId(0, 0, 0) { }
+
+OperationId::OperationId(unsigned short type) : OperationId(type, 0x7) { }
+
+OperationId::OperationId(unsigned short type, unsigned short precedent) : OperationId(type, LAST_ID++, precedent) { }
+
+OperationId::OperationId(unsigned short type, unsigned short opIdBase, unsigned short precedent) {
+	this->id(opIdBase);
+	this->precedent(precedent);
+	this->type(type);
 }
 
 unsigned short OperationId::id() const {
@@ -15,7 +19,11 @@ unsigned short OperationId::id() const {
 }
 
 unsigned short OperationId::precedent() const {
-	return this->mPrecedent;
+	return this->mOpType ? this->mPrecedent : 0x7;
+}
+
+OperationIdOpType OperationId::type() const {
+	return (OperationIdOpType)this->mOpType;
 }
 
 unsigned short OperationId::id(unsigned short value) {
@@ -23,7 +31,11 @@ unsigned short OperationId::id(unsigned short value) {
 }
 
 unsigned short OperationId::precedent(unsigned short value) {
-	return (this->mPrecedent = (value > 0xF) ? 0xF : value);
+	return (this->mPrecedent = (value > 0x7) ? 0x7 : value);
+}
+
+OperationIdOpType OperationId::type(unsigned short value) {
+	return (OperationIdOpType)(this->mOpType = (bool)value);
 }
 
 bool operator<(const OperationId& opIdRefL, const OperationId& opIdRefR) {
@@ -34,8 +46,11 @@ bool operator<(const OperationId& opIdRefL, const OperationId& opIdRefR) {
 //
 //
 
-ExpressionOperationInfo::ExpressionOperationInfo(const char* token, OperationId id)
-	: mToken(token), mTokenLen(strlen(token)), mOpId(id) { }
+ExpressionOperationInfo::ExpressionOperationInfo(const char* token, OperationId id, UnaryOperationCallback cb)
+	: mToken(token), mTokenLen(strlen(token)), mOpId(id), mOpCallback((void*)cb) { }
+
+ExpressionOperationInfo::ExpressionOperationInfo(const char* token, OperationId id, BinaryOperationCallback cb)
+	: mToken(token), mTokenLen(strlen(token)), mOpId(id), mOpCallback((void*)cb) { }
 
 ExpressionOperationInfo::ExpressionOperationInfo(const char* token)
 	: mToken(token), mTokenLen(strlen(token)) { }
@@ -54,79 +69,41 @@ unsigned char ExpressionOperationInfo::tokenLen() const {
 	return this->mTokenLen;
 }
 
-//
-//
-//
-
-std::map<OperationId, BinaryOperationInfo> BinaryOperationInfo::DECLARED_OPERATIONS = { };
-unsigned short BinaryOperationInfo::DECLARED_LAST_ID = 0;
-
-BinaryOperationInfo::BinaryOperationInfo() {
-
+UnaryOperationCallback ExpressionOperationInfo::unaryCallback() const {
+	return (UnaryOperationCallback)this->mOpCallback;
 }
 
-BinaryOperationInfo::BinaryOperationInfo(const char* token, unsigned short precedent)
-	: ExpressionOperationInfo(token) {
-	this->mOpId = OperationId(DECLARED_LAST_ID++, precedent);
+BinaryOperationCallback ExpressionOperationInfo::binaryCallback() const {
+	return (BinaryOperationCallback)this->mOpCallback;
 }
 
-void BinaryOperationInfo::declareOperations() {
-	return;
-}
+// static members
 
-bool BinaryOperationInfo::findOperation(const char* cstr, const void** ptrStore) {
-	for (const auto& declOp : DECLARED_OPERATIONS) {
-		if (!strncmp(cstr, declOp.second.mToken, declOp.second.mTokenLen)) {
-			*ptrStore = (void*)&declOp.second;
+std::map<OperationId, ExpressionOperationInfo> ExpressionOperationInfo::DECLARED_OPERATIONS = { };
+
+bool ExpressionOperationInfo::findOperation(const char* token, const ExpressionOperationInfo** storePtr) {
+	for (const auto& opPair : DECLARED_OPERATIONS) {
+		if (!strncmp(token, opPair.second.mToken, opPair.second.mTokenLen)) {
+			*storePtr = &opPair.second;
 			return true;
 		}
 	}
 	return false;
 }
 
-bool BinaryOperationInfo::findOperation(OperationId id, const void** ptrStore) {
-	auto iter = DECLARED_OPERATIONS.find(id);
-	if (iter != DECLARED_OPERATIONS.end()) {
-		*ptrStore = (void*)&iter->second;
-		return true;
-	} 
-	return false;
-}
+bool ExpressionOperationInfo::findOperation(OperationId opId, const ExpressionOperationInfo** storePtr) {
+	const auto iter = DECLARED_OPERATIONS.find(opId);
 
-//
-//
-//
-
-std::map<OperationId, UnaryOperationInfo> UnaryOperationInfo::DECLARED_OPERATIONS = { };
-unsigned short UnaryOperationInfo::DECLARED_LAST_ID = 0;
-
-UnaryOperationInfo::UnaryOperationInfo(const char* token) 
-	: ExpressionOperationInfo(token, OperationId(DECLARED_LAST_ID++, 0xF)) {
-}
-
-UnaryOperationInfo::UnaryOperationInfo() {
-
-}
-
-void UnaryOperationInfo::declareOperations() {
-	return;
-}
-
-bool UnaryOperationInfo::findOperation(const char* cstr, const void** ptrStore) {
-	for (const auto& declOp : DECLARED_OPERATIONS) {
-		if (!strncmp(cstr, declOp.second.mToken, declOp.second.mTokenLen)) {
-			*ptrStore = (void*)&declOp.second;
-			return true;
-		}
+	if (iter == DECLARED_OPERATIONS.end()) {
+		return false;
 	}
-	return false;
+
+	*storePtr = &iter->second;
+	return true;
 }
 
-bool UnaryOperationInfo::findOperation(OperationId id, const void** ptrStore) {
-	auto iter = DECLARED_OPERATIONS.find(id);
-	if (iter != DECLARED_OPERATIONS.end()) {
-		*ptrStore = (void*)&iter->second;
-		return true;
+void ExpressionOperationInfo::declareOperations(const std::initializer_list<ExpressionOperationInfo>& operations) {
+	for (const auto& operationInfo : operations) {
+		DECLARED_OPERATIONS[operationInfo.opId()] = operationInfo;
 	}
-	return false;
 }
