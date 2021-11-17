@@ -19,8 +19,6 @@ public:
 	ExpressionTreeNode* left() const;
 	ExpressionTreeNode* right() const;
 
-	ExpressionTreeNode* copy() const;
-
 	void print(std::ostream& out, unsigned short depth = 0);
 };
 
@@ -28,12 +26,9 @@ class ExpressionTree {
 private:
 	ExpressionTreeNode* root;
 
-	float solve(ExpressionTreeNode* root);
-
 public:
 	ExpressionTree(const Expression& expr);
-
-	float solve();
+	ExpressionTree(const ExpressionTree& exprTree);
 
 public:
 	friend std::ostream& operator<<(std::ostream& out, const ExpressionTree& tree);

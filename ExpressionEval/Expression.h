@@ -2,14 +2,14 @@
 #include <string>
 #include <vector>
 
-#include "ExpressionNode.h"
+#include "_ExpressionNode.h"
 
 #pragma once
 
 class Expression
 {
 private:
-	std::vector<ExpressionNode> mExpressionNodes;
+	std::vector<_ExpressionNode> mExpressionNodes;
 
 public:
 	Expression(const char* cstr, size_t len);
@@ -18,8 +18,8 @@ public:
 
 	size_t nodeCount() const;
 
-	std::vector<ExpressionNode>::const_iterator begin() const;
-	std::vector<ExpressionNode>::const_iterator end() const;
+	std::vector<_ExpressionNode>::const_iterator begin() const;
+	std::vector<_ExpressionNode>::const_iterator end() const;
 
 public:
 	Expression& operator=(const Expression& expressionRef);

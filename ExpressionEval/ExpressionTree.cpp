@@ -22,13 +22,6 @@ ExpressionTreeNode* ExpressionTreeNode::right() const {
 	return this->mRight;
 }
 
-ExpressionTreeNode* ExpressionTreeNode::copy() const {
-	return new ExpressionTreeNode(
-		this->mNode, 
-		this->mLeft ? this->mLeft->copy() : NULL, 
-		this->mRight ? this->mRight->copy() : NULL
-	);
-}
 
 void ExpressionTreeNode::print(std::ostream& out, unsigned short depth) {
 	for (unsigned short i = 0; i != depth; i++) {
@@ -143,36 +136,8 @@ ExpressionTree::ExpressionTree(const Expression& expr) {
 	this->root = treeNodeStack.top();
 }
 
-float ExpressionTree::solve(ExpressionTreeNode* root) {
-	const ExpressionOperationInfo* opInfoPtr;
-	
-	switch (root->node().type())
-	{
-	case ExpressionNodeType::VALUE:
-		return root->node().value();
-	
-	case ExpressionNodeType::OPERATION:
-		if (ExpressionOperationInfo::findOperation(root->node().opId(), &opInfoPtr)) {
-			switch (opInfoPtr->opId().type())
-			{
-			case OperationIdOpType::BINARY:
-				opInfoPtr->binaryCallback()(this->solve(root->left()), this->solve(root->right()));
-				break;
+ExpressionTree::ExpressionTree(const ExpressionTree& exprTree) {
 
-			case OperationIdOpType::UNARY:
-				opInfoPtr->unaryCallback()(this->solve(root->left()));
-				break;
-			}
-		}
-		else {
-			return 0.f;
-		}
-	}
-}
-
-float ExpressionTree::solve() {
-	ExpressionTreeNode* rootCopy = this->root->copy();
-	return this->solve(rootCopy);
 }
 
 std::ostream& operator<<(std::ostream& out, const ExpressionTree& tree) {
