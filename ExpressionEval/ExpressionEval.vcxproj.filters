@@ -21,24 +21,18 @@
     <ClCompile Include="Expression.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExpressionNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ExpressionOperation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="_ExpressionNode.cpp">
+    <ClCompile Include="ExpressionNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Expression.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ExpressionNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ExpressionOperation.h">
@@ -47,7 +41,7 @@
     <ClInclude Include="ExpressionTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="_ExpressionNode.h">
+    <ClInclude Include="ExpressionNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -14,7 +14,7 @@ private:
 public:
 	Expression(const char* cstr, size_t len);
 	Expression(const std::string& str);
-	Expression(const Expression& expressionRef);
+	Expression(const Expression& expression);
 
 	size_t nodeCount() const;
 
