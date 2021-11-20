@@ -1,12 +1,15 @@
 #include <iostream>
 #include <vector>
+#include <map>
 
 #pragma once
 
 #ifdef _EXPR_EVAL_DOUBLE_PRECISION
 	typedef double FloatType;
+#	define strtoft strtod
 #else
 	typedef float FloatType;
+#	define strtoft strtof
 #endif
 
 /*
@@ -42,6 +45,8 @@ protected:
 
 	_ExpressionNode(unsigned char type, unsigned char subType);
 
+	_ExpressionNode();
+
 public:
 	unsigned char type();
 	unsigned char subType();
@@ -69,8 +74,8 @@ public:
 	OperandNode(FloatType value);
 	OperandNode(char variable);
 
-	FloatType value();
-	char variable();
+	FloatType value() const;
+	char variable() const;
 };
 
 //
@@ -101,8 +106,10 @@ typedef FloatType(*OperationNodeFunctionCallback)(void(*)(int, const char*), uns
 
 class OperationNode : public _ExpressionNode {
 private:
+	static std::map<unsigned int, OperationNode> DEFINED_OPERATIONS;
 
-	static unsigned short LAST_OPERATION_ID;
+private:
+	static void defineOperations();
 
 private:
 
@@ -115,13 +122,15 @@ private:
 	const char* mToken;				// string representation of the operation, eg. "+" "sin"
 	unsigned char mTokenLen;	
 
-	unsigned short mOperationId;
+	unsigned int mOperationId;
 	unsigned char mOperationPrecedent = 0xFF;
 	unsigned char mOperationFuncArgExpect = 0;
 
 	OperationNode(const char* token, unsigned char subType);
 
 public:
+	OperationNode();
+
 	OperationNode(
 		const char* token,
 		unsigned char precedent,
@@ -138,6 +147,21 @@ public:
 		unsigned char functionArgExpect,
 		OperationNodeFunctionCallback callback
 	);
+
+	unsigned int opId() const;
+	const char* token() const;
+	unsigned char tokenLen() const;
+
+
+public:
+	template<typename ...VarRest>
+	static void defineOperations(const OperationNode& opNode, const VarRest& ...rest) {
+		OperationNode::DEFINED_OPERATIONS[opNode.mOperationId] = opNode;
+		OperationNode::defineOperations(rest...);
+	}
+
+	static bool isOperationStr(const char* c, _ExpressionNode** dynStore = NULL);
+	static bool isOperationId(unsigned int id, _ExpressionNode** dynStore = NULL);
 };
 
 //
@@ -160,5 +184,6 @@ private:
 public:
 	ScopeNode(char scopeChar);
 
-
+public:
+	static bool isScopeStr(const char* c, _ExpressionNode** dynStore = NULL);
 };
