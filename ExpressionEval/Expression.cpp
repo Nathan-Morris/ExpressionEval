@@ -1,9 +1,9 @@
 #include "Expression.h"
 
-Expression::ExpressionBranch::ExpressionBranch(const ExpressionNode& node, ExpressionBranch* left, ExpressionBranch* right)
+ExpressionBranch::ExpressionBranch(const ExpressionNode& node, ExpressionBranch* left, ExpressionBranch* right)
 	: mNode(node), mLeft(left), mRight(right) { }
 
-Expression::ExpressionBranch::ExpressionBranch(const ExpressionBranch& exprBranch) {
+ExpressionBranch::ExpressionBranch(const ExpressionBranch& exprBranch) {
 	this->mNode = exprBranch.mNode;
 
 	if (exprBranch.mLeft) {
@@ -15,35 +15,37 @@ Expression::ExpressionBranch::ExpressionBranch(const ExpressionBranch& exprBranc
 	}
 }
 
-Expression::ExpressionBranch::~ExpressionBranch() {
+ExpressionBranch::~ExpressionBranch() {
 	if (this->mLeft) {
 		this->mLeft->~ExpressionBranch();
 		delete this->mLeft;
+		this->mLeft = NULL;
 	}
 
 	if (this->mRight) {
 		this->mRight->~ExpressionBranch();
 		delete this->mRight;
+		this->mRight = NULL;
 	}
 }
 
-ExpressionNode& Expression::ExpressionBranch::node() {
+ExpressionNode& ExpressionBranch::node() {
 	return this->mNode;
 }
 
-const ExpressionNode& Expression::ExpressionBranch::node() const {
+const ExpressionNode& ExpressionBranch::node() const {
 	return this->mNode;
 }
 
-Expression::ExpressionBranch* Expression::ExpressionBranch::left() const {
+ExpressionBranch* ExpressionBranch::left() const {
 	return this->mLeft;
 }
 
-Expression::ExpressionBranch* Expression::ExpressionBranch::right() const {
+ExpressionBranch* ExpressionBranch::right() const {
 	return this->mRight;
 };
 
-Expression::ExpressionBranch& Expression::ExpressionBranch::operator=(const ExpressionBranch& exprBranch) {
+ExpressionBranch& ExpressionBranch::operator=(const ExpressionBranch& exprBranch) {
 	this->mNode = exprBranch.mNode;
 	if (exprBranch.mLeft) {
 		this->mLeft = new ExpressionBranch(*exprBranch.mLeft);
@@ -55,7 +57,7 @@ Expression::ExpressionBranch& Expression::ExpressionBranch::operator=(const Expr
 }
 
 
-void Expression::ExpressionBranch::print(std::ostream& out, unsigned int depth) const {
+void ExpressionBranch::print(std::ostream& out, unsigned int depth) const {
 	for (unsigned int i = 0; i != depth; i++) {
 		out << '\t';
 	}
@@ -71,7 +73,7 @@ void Expression::ExpressionBranch::print(std::ostream& out, unsigned int depth) 
 	}
 }
 
-FloatType Expression::ExpressionBranch::solve(const std::map<char, FloatType>& variableMap) const {
+FloatType ExpressionBranch::solve(const std::map<char, FloatType>& variableMap) const {
 	if (this->mNode.type() == EXPR_NODE_OPERAND) {
 		if (this->mNode.subType() == OPERAND_NODE_VALUE) {
 			return this->mNode.value();
@@ -101,7 +103,7 @@ FloatType Expression::ExpressionBranch::solve(const std::map<char, FloatType>& v
 	}
 }
 
-std::ostream& operator<<(std::ostream& out, const Expression::ExpressionBranch& branch) {
+std::ostream& operator<<(std::ostream& out, const ExpressionBranch& branch) {
 	branch.print(out);
 	return out;
 }
@@ -115,6 +117,22 @@ Expression::Expression() {
 }
 
 Expression::Expression(const char* cstr, size_t len) {
+	this->parse(cstr, len);
+}
+
+Expression::Expression(const std::string& str) : Expression(str.c_str(), str.length()) { }
+
+Expression::~Expression() { 
+	if (this->mRoot) {
+		delete this->mRoot; // calls de-constructor
+	}
+
+	this->mRoot = NULL;
+}
+
+Expression& Expression::parse(const char* cstr, size_t len) {
+	this->~Expression();
+
 	// init
 	std::vector<ExpressionNode> nodes;
 	// post
@@ -141,14 +159,12 @@ Expression::Expression(const char* cstr, size_t len) {
 		}
 	}
 
-	std::cout << *this << std::endl;
-
 	//
 	// Shunting Yard to post fix
 	//
 
 	postList.reserve(nodes.size());
-	
+
 	for (size_t i = 0; i != nodes.size(); i++) {
 		ExpressionNode& node = nodes.at(i);
 
@@ -167,7 +183,7 @@ Expression::Expression(const char* cstr, size_t len) {
 					operatorStack.size()
 					&& !(operatorStack.top().type() == EXPR_NODE_SCOPE && operatorStack.top().subType() == SCOPE_NODE_INCREMENT)
 					&& (operatorStack.top().type() != EXPR_NODE_OPERATION || operatorStack.top().operation().precedent() >= node.operation().precedent())
-				) {
+					) {
 					if (operatorStack.top().type() == EXPR_NODE_OPERATION && operatorStack.top().subType() == OPERATION_NODE_UNARY) {
 						if (unaryPopped) {
 							break;
@@ -206,7 +222,7 @@ Expression::Expression(const char* cstr, size_t len) {
 				while (
 					operatorStack.size()
 					&& !(operatorStack.top().type() == EXPR_NODE_SCOPE && operatorStack.top().subType() == SCOPE_NODE_INCREMENT)
-				) {
+					) {
 					postList.push_back(operatorStack.top());
 					operatorStack.pop();
 				}
@@ -265,24 +281,24 @@ Expression::Expression(const char* cstr, size_t len) {
 	}
 
 	this->mRoot = treeOperandStack.top();
+
+	return *this;
 }
 
-Expression::Expression(const std::string& str) : Expression(str.c_str(), str.length()) {
-
-}
-
-Expression::~Expression() {
-	
+Expression& Expression::parse(const std::string& str) {
+	return this->parse(str.c_str(), str.size());
 }
 
 FloatType Expression::solve(const std::map<char, FloatType>& variableMap) const {
 	return this->mRoot->solve(variableMap);
 }
 
+FloatType Expression::solve() const {
+	return this->mRoot->solve({});
+}
+
 Expression& Expression::operator=(const Expression& e) {
-	if (this->mRoot) {
-		delete this->mRoot; // calls de-constructor
-	}
+	this->~Expression();
 
 	if (e.mRoot) {
 		this->mRoot = new ExpressionBranch(*e.mRoot);
@@ -292,7 +308,6 @@ Expression& Expression::operator=(const Expression& e) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Expression& expr) {
-
 	return out;
 }
 

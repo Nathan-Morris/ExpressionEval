@@ -6,35 +6,6 @@
 
 using namespace std;
 
-/*
-string -> tokens
-*/
-
-static std::vector<ExpressionNode> strToEquList(const std::string& equStr) {
-	std::vector<ExpressionNode> nodes;
-	ExpressionNode nodeFound;
-	char* numEndP = NULL;
-
-
-	for (size_t i = 0; i != equStr.size(); i++) {
-		const char& c = equStr.at(i);
-		size_t tokenInc = ExpressionNode::parseAt(&c, nodeFound);
-
-		if (tokenInc) {
-			nodes.push_back(nodeFound);
-			i += tokenInc - 1;
-		}
-	}
-
-	return nodes;
-}
-
-static void equListPrint(const std::vector<ExpressionNode>& equList) {
-	for (ExpressionNode node : equList) {
-		cout << node;
-	}
-}
-
 
 int main(int argc, char* argv[], char* env[]) {
 	OperationNodeInfo("+", 0, [](FloatType a, FloatType b) -> FloatType { return a + b; });
@@ -48,5 +19,6 @@ int main(int argc, char* argv[], char* env[]) {
 	OperationNodeInfo("ceil", [](FloatType x) -> FloatType { return ceil(x); });
 	OperationNodeInfo("floor", [](FloatType x) -> FloatType { return floor(x); });
 
-	
+
+
 }
