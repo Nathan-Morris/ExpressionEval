@@ -1,41 +1,60 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
+#include <stack>
 
 #include "ExpressionNode.h"
 
 #pragma once
 
-class ExpressionBranch {
-private:
-	ExpressionNode mNode;
-	ExpressionBranch* mLeft;
-	ExpressionBranch* mRight;
-
-public:
-	ExpressionBranch(const ExpressionNode& node, ExpressionBranch* left, ExpressionBranch* right);
-
-	ExpressionNode& node();
-	const ExpressionNode& node() const;
-
-	ExpressionBranch* left() const;
-	ExpressionBranch* right() const;
-};
 
 class Expression
 {
+//private:
+public:
+	class ExpressionBranch {
+	private:
+		ExpressionNode mNode;
+		ExpressionBranch* mLeft = NULL;
+		ExpressionBranch* mRight = NULL;
+
+	public:
+		void print(std::ostream& out, unsigned int depth = 0) const;
+		FloatType solve(const std::map<char, FloatType>& variableMap) const;
+
+	public:
+		ExpressionBranch(const ExpressionNode& node, ExpressionBranch* left, ExpressionBranch* right);
+		ExpressionBranch(const ExpressionBranch& exprBranch);
+		~ExpressionBranch();
+
+		ExpressionNode& node();
+		const ExpressionNode& node() const;
+
+		ExpressionBranch* left() const;
+		ExpressionBranch* right() const;
+
+	public:
+		ExpressionBranch& operator=(const ExpressionBranch& branch);
+	};
+
+
 private:
 	ExpressionBranch* mRoot = NULL;
-	std::vector<ExpressionNode> mExpressionNodes;
 
 public:
+	Expression();
 	Expression(const char* cstr, size_t len);
 	Expression(const std::string& str);
+	~Expression();
 
-	size_t nodeCount() const;
+	FloatType solve(const std::map<char, FloatType>& variableMap) const;
 
-	std::vector<ExpressionNode>::const_iterator begin() const;
-	std::vector<ExpressionNode>::const_iterator end() const;
+public:
+	Expression& operator=(const Expression& e);
+
+public:
+	friend std::ostream& operator<<(std::ostream& out, const ExpressionBranch& branch);
 
 public:
 	friend std::ostream& operator<<(std::ostream& out, const Expression& expr);

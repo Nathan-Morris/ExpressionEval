@@ -237,6 +237,10 @@ unsigned char OperationNodeInfo::type() const {
 	return this->mCallbackType;
 }
 
+unsigned char OperationNodeInfo::precedent() const {
+	return this->mOperationPrecedent;
+}
+
 OperationNodeBinaryCallback OperationNodeInfo::binary() const {
 	return this->mCallbackData.bin;
 }

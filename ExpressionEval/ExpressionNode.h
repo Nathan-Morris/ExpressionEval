@@ -119,6 +119,7 @@ public:
 	const char* token() const;
 	unsigned char tokenLen() const;
 	unsigned char type() const;
+	unsigned char precedent() const;
 
 	OperationNodeBinaryCallback binary() const;
 	OperationNodeUnaryCallback unary() const;
