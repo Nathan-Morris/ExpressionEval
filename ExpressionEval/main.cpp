@@ -20,5 +20,12 @@ int main(int argc, char* argv[], char* env[]) {
 	OperationNodeInfo("floor", [](FloatType x) -> FloatType { return floor(x); });
 
 
+	string inEqu;
 
+	while (1) {
+		cout << "Enter Expression: ";
+		getline(cin, inEqu);
+
+		cout << Expression(inEqu).solve() << endl;
+	}
 }
