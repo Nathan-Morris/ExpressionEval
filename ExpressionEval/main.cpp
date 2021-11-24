@@ -6,7 +6,6 @@
 
 using namespace std;
 
-
 int main(int argc, char* argv[], char* env[]) {
 	OperationNodeInfo("+", 0, [](FloatType a, FloatType b) -> FloatType { return a + b; });
 	OperationNodeInfo("-", 0, [](FloatType a, FloatType b) -> FloatType { return a - b; });
@@ -26,6 +25,6 @@ int main(int argc, char* argv[], char* env[]) {
 		cout << "Enter Expression: ";
 		getline(cin, inEqu);
 
-		cout << Expression(inEqu).solve() << endl;
+		cout << Expression(inEqu) << endl;
 	}
 }

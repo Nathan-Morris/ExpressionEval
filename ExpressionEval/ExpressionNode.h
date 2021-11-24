@@ -130,7 +130,7 @@ private:
 
 	static void declareOperations();
 
-	static inline unsigned int hashOperationId(const char* token) {
+	static constexpr inline unsigned int hashOperationId(const char* token) {
 		if (!token) {
 			return 0;
 		}
@@ -159,6 +159,10 @@ public:
 		unsigned int id,
 		const OperationNodeInfo** infoStore = NULL
 	);
+
+	static constexpr unsigned int idOfToken(const char* token) {
+		return hashOperationId(token);
+	}
 
 	// returns 0 if not found, im "pretty" sure no input to djb2 I
 	// will provide results in 0 being returned. *pretty sure*
