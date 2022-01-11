@@ -4,6 +4,11 @@
 
 #pragma once
 
+// TODO move to seperate global inc
+// ================================
+#define _EXPR_EVAL_DOUBLE_PRECISION
+// ================================
+
 #ifdef _EXPR_EVAL_DOUBLE_PRECISION
 	typedef double FloatType;
 #	define strtoft strtod
@@ -228,117 +233,3 @@ public:
 // ==============================================================
 //
 
-
-//class OperandNode : public ExpressionNode {
-//private:
-//	union OperandNodeData {
-//		FloatType value;
-//		char variable;
-//	} mData;
-//
-//	OperandNode(unsigned char subType);
-//
-//public:
-//	OperandNode(FloatType value);
-//	OperandNode(char variable);
-//
-//	FloatType value() const;
-//	char variable() const;
-//
-//public:
-//	friend std::ostream& operator<<(std::ostream& out, const OperandNode& node);
-//};
-
-//
-// ==============================================================
-//
-
-//class OperationNode : public ExpressionNode {
-//private:
-//	static std::map<unsigned int, OperationNode> DEFINED_OPERATIONS;
-//
-//private:
-//	static void defineOperations();
-//
-//private:
-//
-//	union OperationNodeCallbackData {
-//		OperationNodeBinaryCallback bin;
-//		OperationNodeUnaryCallback un;
-//		OperationNodeFunctionCallback func;
-//	} mCallbackData;
-//
-//	const char* mToken;				// string representation of the operation, eg. "+" "sin"
-//	unsigned char mTokenLen;	
-//
-//	unsigned int mOperationId;
-//	unsigned char mOperationPrecedent = 0xFF;
-//	unsigned char mOperationFuncArgExpect = 0;
-//
-//	OperationNode(const char* token, unsigned char subType);
-//
-//public:
-//	OperationNode();
-//
-//	OperationNode(
-//		const char* token,
-//		unsigned char precedent,
-//		OperationNodeBinaryCallback callback
-//	);
-//
-//	OperationNode(
-//		const char* token,
-//		OperationNodeUnaryCallback callback
-//	);
-//
-//	OperationNode(
-//		const char* token,
-//		unsigned char functionArgExpect,
-//		OperationNodeFunctionCallback callback
-//	);
-//
-//	unsigned int opId() const;
-//	const char* token() const;
-//	unsigned char tokenLen() const;
-//
-//
-//public:
-//	template<typename ...VarRest>
-//	static void defineOperations(const OperationNode& opNode, const VarRest& ...rest) {
-//		OperationNode::DEFINED_OPERATIONS[opNode.mOperationId] = opNode;
-//		OperationNode::defineOperations(rest...);
-//	}
-//
-//	static bool isOperationStr(const char* c, ExpressionNode** dynStore = NULL);
-//	static bool isOperationId(unsigned int id, ExpressionNode** dynStore = NULL);
-//
-//public:
-//	friend std::ostream& operator<<(std::ostream& out, const OperationNode& node);
-//};
-
-//
-// ==============================================================
-//
-
-//enum ScopeNodeType : unsigned char {
-//	SCOPE_NODE_INCREMENT,
-//	SCOPE_NODE_DECREMENT
-//};
-//
-//class ScopeNode : public ExpressionNode {
-//private:
-//	static std::vector<char> SCOPE_INC_CHARS;
-//	static std::vector<char> SCOPE_DEC_CHARS;
-//
-//private:
-//	ScopeNode(unsigned char subType);
-//
-//public:
-//	ScopeNode(char scopeChar);
-//
-//public:
-//	static bool isScopeStr(const char* c, ExpressionNode** dynStore = NULL);
-//
-//public:
-//	friend std::ostream& operator<<(std::ostream& out, const ScopeNode& node);
-//};

@@ -1,5 +1,8 @@
+#define _USE_MATH_DEFINES
+
 #include <iostream>
 #include <string>
+#include <cmath>
 
 #include "ExpressionNode.h"
 #include "Expression.h"
@@ -17,14 +20,16 @@ int main(int argc, char* argv[], char* env[]) {
 	OperationNodeInfo("tan", [](FloatType x) -> FloatType { return tan(x); });
 	OperationNodeInfo("ceil", [](FloatType x) -> FloatType { return ceil(x); });
 	OperationNodeInfo("floor", [](FloatType x) -> FloatType { return floor(x); });
-
-
+	OperationNodeInfo("rad", [](FloatType x) -> FloatType { return x * M_PI / 180.0; });
+	OperationNodeInfo("deg", [](FloatType x) -> FloatType { return x * 180.0 / M_PI; });
+	
 	string inEqu;
-
+	
 	while (1) {
 		cout << "Enter Expression: ";
 		getline(cin, inEqu);
-
+	
 		cout << Expression(inEqu) << endl;
+		cout << "= " << Expression(inEqu).solve() << endl;
 	}
 }

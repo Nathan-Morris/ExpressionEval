@@ -23,9 +23,6 @@
 
 class ExpressionBranch {
 private:
-	static std::map<unsigned int, ExpressionBranch*> EXPRESSION_COMMON_DERIVATIVES;
-
-private:
 	ExpressionNode mNode;
 	ExpressionBranch* mLeft = NULL;
 	ExpressionBranch* mRight = NULL;

@@ -4,71 +4,6 @@
 //
 //
 
-std::map<unsigned int, ExpressionBranch*> EXPRESSION_COMMON_DERIVATIVES = {
-	{
-		OperationNodeInfo::idOfToken("+"),
-		new ExpressionBranch(
-			ExpressionNode(OperationNodeInfo::find("+")),
-			EXPR_BRANCH_TEMPLATE_HOLDER_DER_LEFT,
-			EXPR_BRANCH_TEMPLATE_HOLDER_DER_RIGHT
-		)
-	},
-	{
-		OperationNodeInfo::idOfToken("-"),
-		new ExpressionBranch(
-			ExpressionNode(OperationNodeInfo::find("-")),
-			EXPR_BRANCH_TEMPLATE_HOLDER_DER_LEFT,
-			EXPR_BRANCH_TEMPLATE_HOLDER_DER_RIGHT
-		)
-	},
-	{
-		OperationNodeInfo::idOfToken("*"),
-		new ExpressionBranch(
-				ExpressionNode(OperationNodeInfo::find("+")),
-				new ExpressionBranch(
-					ExpressionNode(OperationNodeInfo::find("*")),
-					EXPR_BRANCH_TEMPLATE_HOLDER_DER_LEFT,
-					EXPR_BRANCH_TEMPLATE_HOLDER_RIGHT
-				),
-
-				new ExpressionBranch(
-					ExpressionNode(OperationNodeInfo::find("*")),
-					EXPR_BRANCH_TEMPLATE_HOLDER_LEFT,
-					EXPR_BRANCH_TEMPLATE_HOLDER_DER_RIGHT
-				)
-			)
-	},
-	{
-		OperationNodeInfo::idOfToken("/"),
-		new ExpressionBranch(
-				ExpressionNode(OperationNodeInfo::find("/")),
-				new ExpressionBranch(
-					ExpressionNode(OperationNodeInfo::find("-")),
-					new ExpressionBranch(
-						ExpressionNode(OperationNodeInfo::find("*")),
-						EXPR_BRANCH_TEMPLATE_HOLDER_DER_LEFT,
-						EXPR_BRANCH_TEMPLATE_HOLDER_RIGHT
-					),
-
-					new ExpressionBranch(
-						ExpressionNode(OperationNodeInfo::find("*")),
-						EXPR_BRANCH_TEMPLATE_HOLDER_LEFT,
-						EXPR_BRANCH_TEMPLATE_HOLDER_DER_RIGHT
-					)
-				),
-				new ExpressionBranch(
-					ExpressionNode(OperationNodeInfo::find("^")),
-					EXPR_BRANCH_TEMPLATE_HOLDER_RIGHT,
-					new ExpressionBranch(ExpressionNode((FloatType)2.0), NULL, NULL)
-				)
-			)
-	},
-};
-
-//
-//
-//
-
 ExpressionBranch::ExpressionBranch(const ExpressionNode& node, ExpressionBranch* left, ExpressionBranch* right)
 	: mNode(node), mLeft(left), mRight(right) { }
 
@@ -185,7 +120,7 @@ ExpressionBranch* ExpressionBranch::derivative() const {
 		case OperationNodeInfo::idOfToken("^"):
 
 		default:
-
+			break;
 		}
 
 	}
@@ -247,6 +182,8 @@ FloatType ExpressionBranch::solve(const std::map<char, FloatType>& variableMap) 
 			);
 		}
 	}
+
+	return 0;
 }
 
 std::ostream& operator<<(std::ostream& out, const ExpressionBranch& branch) {
@@ -453,7 +390,7 @@ FloatType Expression::solve() const {
 }
 
 Expression Expression::derivative() const {
-
+	return Expression();
 }
 
 Expression& Expression::operator=(const Expression& e) {
@@ -467,6 +404,7 @@ Expression& Expression::operator=(const Expression& e) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Expression& expr) {
+	expr.mRoot->print(out);
 	return out;
 }
 
